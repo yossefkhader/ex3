@@ -1,7 +1,6 @@
 #ifndef __NODE_H__
 #define __NODE_H__
 
-#include "Queue.h"
 
 /**
  * in this file we impliment the Node class which is used in the Queue class
@@ -28,7 +27,8 @@ public:
     ~Node() = default;
     void setNext(Node* item);   //changes the next pointer to the next node  
     Node* getNext();            //returns the next pointer
-    T* getItem();               //returns a pointer to the item which is stored in the node
+    T& getItemR();               //returns a pointer to the item which is stored in the node
+    T getItemV() const;
 };
 
 Node::Node(T item)
@@ -47,9 +47,14 @@ Node* Node::getNext()
     return this->next;
 }
 
-T* Node::getItem()
+T& Node::getItemR()
 {
-    return &this->item;
+    return this->item;
+}
+
+T Node::getItemV() const 
+{
+    return this->item;
 }
 
 #endif

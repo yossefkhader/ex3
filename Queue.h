@@ -16,7 +16,7 @@
 */
 
 int typedef T;
-typedef bool (*FunctionType)(int, int);
+typedef bool (*FunctionType)(T);
 
 class Queue
 {
@@ -35,21 +35,23 @@ class Queue
         T* front();
         void popFront();
         int size();
+        Iterator* begin();
+        Iterator* end();
 };
 //_____________________________________________________________________________________________________________________
 class Queue::Iterator
 {
     private:
-        const Node* node;
+        Node* node;
         const Queue* queue;
         int index;
         Iterator(Queue* queue, int index);
         friend class Queue;
     public:
-        ~Iterator();
-        Iterator& operator++();
-        Iterator operator++(int);
-        bool operator!=(Iterator&);
+        ~Iterator() = default;
+        Queue::Iterator& operator++();
+        Queue::Iterator operator++(int);
+        bool operator!=(Queue::Iterator& it);
         const Node& operator*() const;
 };
 //---------------------------------------------------------------------------------------------------------------------
@@ -92,24 +94,41 @@ int Queue::size()
     return this->qSize;
 }
 
+Queue::Iterator* Queue::begin()
+{
+    Queue::Iterator* tmp = new Queue::Iterator(this, 0);
+    return tmp;
+}
+
+Queue::Iterator* Queue::end()
+{
+    Queue::Iterator* tmp = new Queue::Iterator(this, this->size());
+    return tmp;
+}
+
 Queue& filter(Queue queue, FunctionType f)
 {
-
+    Queue* tmp = new Queue();
+    
 }
-//_____________________________________________________________________________________________________________________
-/**
+
+/**_____________________________________________________________________________________________________________________
+ * 
  * here we impliment the Queue::Iterator class
+ * 
 */
 
-Queue::Iterator::Iterator(Queue* queue, int index)
+Queue::Iterator::Iterator(Queue* queue, int index):
+    queue(queue),
+    node(queue->first),
+    index(index)
 {
-
+    for(int i=0; i<index; ++i)      //move to the node that we have to point at
+    {
+        node = node->next;
+    }
 }
 
-Queue::Iterator::~Iterator()
-{
-
-}
 
 Queue::Iterator& Queue::Iterator::operator++()
 {
@@ -126,9 +145,9 @@ Queue::Iterator Queue::Iterator::operator++(int)
     return tmp;
 }
 
-bool Queue::Iterator::operator!=(Iterator& s )
+bool Queue::Iterator::operator!=(Queue::Iterator& it)
 {
-    return index != s.index;
+    return index != it.index;
 }
 
 
@@ -139,7 +158,6 @@ bool Queue::Iterator::operator!=(Iterator& s )
 */
 const Node& Queue::Iterator::operator*() const
 {
-    //TODO: make a [] operator in Queue
     return *node;
 }
 
