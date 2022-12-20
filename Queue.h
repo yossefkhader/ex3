@@ -4,16 +4,7 @@
 
 #include "Node.h"
 
-/*
- TODO:
-    [ ] make an iterator class 
-    [ ] CHECK WTF I'VE DID WITH THE ITERATOR CLASS
-    [ ] check which of the functions has to be const
-    [ ] complete the remaining functions(filter and transform)
-    [ ] add the error indicators (try, catch, throw) in the needed places
-    [ ] write notes here and there
-    [ ] change it into template
-*/
+
 
 int typedef T;
 typedef bool (*FunctionType)(T);
@@ -76,10 +67,7 @@ void Queue::pushBack(T item)
     this->lastItem = item;
 }
 
-T* Queue::front()
-{
-    return this->first->getItem();
-}
+
 
 void Queue::popFront()
 {

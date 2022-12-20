@@ -19,42 +19,37 @@ typedef int T;
 class Node
 {
 private:
-    Node* next;
-    T item;      
+    Node* m_next;
+    T m_item;      
     friend class Queue;
 public:
-    Node(T item);
+    Node(T m_item);
     ~Node() = default;
-    void setNext(Node* item);   //changes the next pointer to the next node  
-    Node* getNext();            //returns the next pointer
-    T& getItemR();               //returns a pointer to the item which is stored in the node
-    T getItemV() const;
+    void setNext(Node* m_item);   //changes the m_next pointer to the next node  
+    Node* getNext();            //returns the m_next pointer
+    T& getRefItem();         //returns a reference to the m_item
 };
 
-Node::Node(T item)
+Node::Node(T m_item)
 {
-    this->next = nullptr;
-    this->item = item;
+    this->m_next = nullptr;
+    this->m_item = m_item;
 }
 
-void Node::setNext(Node* item)
+void Node::setNext(Node* m_item)
 {
-    this->next = item;
+    this->m_next = m_item;
 }
 
 Node* Node::getNext()
 {
-    return this->next;
+    return this->m_next;
 }
 
-T& Node::getItemR()
+T& Node::getRefItem()
 {
-    return this->item;
+    return this->m_item;
 }
 
-T Node::getItemV() const 
-{
-    return this->item;
-}
 
 #endif

@@ -4,8 +4,22 @@
 #include "Node.h"
 
 typedef int T;
+// typedef T* Iterator; //it's forbidden to do that if you want to change the implementation of operator++ or any other operator
+// typedef const T* const_Iterator; //the note above also for this one
 typedef bool (*FilterType)(T);
 typedef void (*TransformType)(T&);
+
+/*
+ TODO:
+    [x] make an iterator class 
+    [x] CHECK WTF I'VE DID WITH THE ITERATOR CLASS
+    [ ] check which of the functions has to be const
+    [ ] add the error indicators (try, catch, throw) in the needed places
+    [x] complete the remaining functions(filter and transform)
+    [ ] make an another copy for filter and transform that has function object in the argument
+    [ ] change it into template    
+    [x] write notes here and there
+*/
 
 class Queue
 {
@@ -17,29 +31,36 @@ class Queue
         friend class Iterator;
     public:
         class Iterator;
+        class const_Iterator;
         Queue() = default;
-        ~Queue();    //a for loop that deetes each node
-        void pushBack(T item);
+        ~Queue();    //TODO: a for loop that deletes each node
+        const void pushBack(T item);
         T& front();
-        void popFront();
-        int size();
-        Iterator* begin();
-        Iterator* end();
+        const void popFront();
+        const int size() const;
+        Node* gotoIndex(int index);
+        Iterator begin();
+        const_Iterator begin() const;
+        Iterator end();
+        const_Iterator end() const;
 };
 
 class Queue::Iterator
 {
 private:
-    const Queue* q;
-    int index;
-    Iterator(Queue* q, int index);
+    // const Queue* m_q;
+    Node* m_node;
+    Iterator(Node* node);
     friend class Queue;
 public:
-    Node* node; 
     ~Iterator();
+    // Queue::Iterator& operator=(const Queue::Iterator& it) = default;
     Queue::Iterator& operator++();
-    bool operator!=(Queue::Iterator& it);
-    const Node* operator*() const;
+    const T& operator*() const;
+    bool operator!=(const Queue::Iterator& it) const;
+    friend Queue filter(Queue q, FilterType f);
+    friend void transform(Queue q, FilterType f);
+
 };
 
 /**
@@ -52,10 +73,10 @@ public:
  * gets an item and puts it in the back of the queue,
  * after that adds 1 to the size of the queue.
 */
-void Queue::pushBack(T item)
+const void Queue::pushBack(T item)
 {
     /**
-     * TODO: check if there is a need for a dummy node at the end
+      TODO: check if there is a need for a dummy node at the end
     */
     this->m_backCopy = item;
     Node* tmp = new Node(item);
@@ -67,15 +88,14 @@ void Queue::pushBack(T item)
 
 T& Queue::front()
 {
-    return this->m_front->getItemR();
+    return this->m_front->getRefItem();
 }
-
 
 /**
  * removes the first node in the queue,
  * and then subtracts 1 from the size of the queue.
 */
-void Queue::popFront()
+const void Queue::popFront()
 {
     Node* tmp = this->m_front;
     this->m_front = this->m_front->getNext();
@@ -83,21 +103,31 @@ void Queue::popFront()
     this->m_size--;
 }
 
-int Queue::size()
+const int Queue::size() const
 {
     return this->m_size;
 }
 
-Queue::Iterator* Queue::begin()
+Node* Queue::gotoIndex(int index)
 {
-    Queue::Iterator* result = new Queue::Iterator(this, 0);
-    return result;
+    Node* tmp = this->m_front;
+
+    for(int i=0; i < index; ++i)
+    {
+        tmp = tmp->getNext();
+    }
+
+    return tmp;
 }
 
-Queue::Iterator* Queue::end()
+Queue::Iterator Queue::begin()
 {
-    Queue::Iterator* result = new Queue::Iterator(this, this->size());
-    return result;
+    return Queue::Iterator(this->m_front);
+}
+
+Queue::Iterator Queue::end()
+{
+    return Queue::Iterator(nullptr);
 }
 
 /**
@@ -106,41 +136,32 @@ Queue::Iterator* Queue::end()
  * ------------------------------------------------------
 */
 
-Queue::Iterator::Iterator(Queue* q, int index):
-    q(q),
-    index(index)
-{
-    this->node = q->m_front;
+Queue::Iterator::Iterator(Node* node):
+    m_node(node)
+{}
 
-    for(int i=0; i < this->index; ++i)
-    {
-        this->node = this->node->getNext();
-    }
+bool Queue::Iterator::operator!=(const Queue::Iterator& it) const
+{
+    return this->m_node != it.m_node;
 }
 
 /**
  * returns a reference to the Iterator after we made the change
 */
+
 Queue::Iterator& Queue::Iterator::operator++()
 {
-    node = node->getNext();
+    this->m_node = this->m_node->getNext();
     return *this;
 }
 
-/**
- * returns true if we are not at the same index
-*/
-bool Queue::Iterator::operator!=(Queue::Iterator& it)
-{
-    return !(index == it.index);
-}
 
 /**
  * returns a pointer to the node we are at
 */
-const Node* Queue::Iterator::operator*() const
+const T& Queue::Iterator::operator*() const
 {
-    return this->node;
+    return this->m_node->m_item;
 }
 
 /**
@@ -149,25 +170,26 @@ const Node* Queue::Iterator::operator*() const
  * ------------------------------------------------------
 */
 
+
+
 Queue filter(Queue q, FilterType f)
 {
-    Queue* result = new Queue();
-    for(Queue::Iterator* it = q.begin(); it != q.end(); ++it)
+    Queue result;
+    for(Queue::Iterator it = q.begin(); it != q.end(); ++it)
     {
-        if(f(it->node->getItemV()))
+        if(f(it.m_node->getRefItem()))
         {
-            result->pushBack(it->node->getItemV());
+            result.pushBack(it.m_node->getRefItem());
         }
     }
-
-    return *result;
+    return result;
 }
 
 void transform(Queue q, FilterType f)
 {
-    for(Queue::Iterator* it = q.begin(); it != q.end(); ++it)
+    for(Queue::Iterator it = q.begin(); it != q.end(); ++it)
     {
-        f(it->node->getItemR());
+        f(it.m_node->getRefItem());
     }
 }
 #endif
