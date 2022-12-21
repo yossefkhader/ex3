@@ -10,9 +10,9 @@ typedef int T;
 
 /*
  TODO: 
-    [ ] check which of the functions has to be const
-    [ ] add the error indicators (try, catch, throw) in the needed places
-    [ ] write notes here and there
+    [x] check which of the functions has to be const
+    [x] add the error indicators (try, catch, throw) in the needed places
+    [x] write notes here and there
     [ ] change it into template
 */
 
@@ -23,30 +23,30 @@ private:
     T m_item;      
     friend class Queue;
 public:
-    Node(T m_item);
+    Node(const T& m_item);
     ~Node() = default;
-    void setNext(Node* m_item);   //changes the m_next pointer to the next node  
-    Node* getNext();            //returns the m_next pointer
-    T& getRefItem();         //returns a reference to the m_item
+    const void setNext(Node* item);   //changes the m_next pointer to the next node  
+    Node* getNext() const;            //returns the m_next pointer
+    T& getRefItem();         //returns a reference to m_item
 };
 
-Node::Node(T m_item)
+Node::Node(const T& m_item)
 {
     this->m_next = nullptr;
     this->m_item = m_item;
 }
 
-void Node::setNext(Node* m_item)
+const void Node::setNext(Node* item)
 {
-    this->m_next = m_item;
+    this->m_next = item;
 }
 
-Node* Node::getNext()
+Node* Node::getNext() const
 {
     return this->m_next;
 }
 
-T& Node::getRefItem()
+T& Node::getRefItem() 
 {
     return this->m_item;
 }
