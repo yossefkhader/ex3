@@ -1,5 +1,5 @@
 
-#include "Queue.h"
+#include "Queuenew.h"
 #include "iostream"
 
 #define AGREGATE_TEST_RESULT(res, cond) (res) = ((res) && (cond))
@@ -117,6 +117,7 @@ bool testConstQueue()
 		exceptionThrown = true;
 	}
 	AGREGATE_TEST_RESULT(testResult, exceptionThrown);
+
 
 	return testResult;
 }
