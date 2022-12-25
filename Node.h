@@ -6,16 +6,6 @@
  * in this file we impliment the Node class which is used in the Queue class
 */
 
-typedef int T;
-
-/*s
- TODO: 
-    [x] check which of the functions has to be const
-    [ ] check also if there is enough function in the class to be const
-    [x] add the error indicators (try, catch, throw) in the needed places
-    [x] write notes here and there
-    [x] change it into template
-*/
 
 template <class T>
 class Node

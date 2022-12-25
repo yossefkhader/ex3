@@ -77,7 +77,7 @@ public:
     template <typename E>
     friend void transform(Queue<E>& q, void (*TransformType)(E&)); //takes function ptr in the argumnt
     template <class E, typename F>
-    void transform(Queue<E>& q, F function); //takes a function object in the argument
+    friend void transform(Queue<E>& q, F function); //takes a function object in the argument
 
 private:
     Node<T>* m_node;
@@ -179,36 +179,58 @@ Queue<T>::~Queue()
 }
 
 template <class T>
-Queue<T>::Queue(const Queue& q):
-    m_size(q.m_size)
+Queue<T>::Queue(const Queue& q)
 {
     if(!q.m_front)
     {
         throw Queue::EmptyQueue();
     }
+    this->m_size = 0;
     for(Queue::ConstIterator it = q.begin(); it != q.end(); ++it)
     {
         this->pushBack(it.m_node->getRefItem());
     }
 }
 
+//Todo: check this shit
 template <class T>
 Queue<T>& Queue<T>::operator=(const Queue& q)
 {
     if(this == &q){
         return *this;
     }
+    Queue<T>* tmp = nullptr;
+
+    try
+    {
+        tmp = new Queue<T>(*this);
+    }
+    catch (std::bad_alloc& e)
+    {
+        std::cerr << e.what() << std::endl;
+    }
+
     int qSize = this->size();
     for(int i=0; i < qSize; i++)
     {
         this->popFront();
     }
-    this->m_size = q.m_size;
-    for(Queue::ConstIterator it = q.begin(); it != q.end(); ++it)
+    this->m_size = 0;
+    try
     {
-        this->pushBack(it.m_node->getRefItem());
+        for(Queue::ConstIterator it = q.begin(); it != q.end(); ++it)
+        {
+            this->pushBack(it.m_node->getRefItem());
+        }
     }
-
+    catch (std::bad_alloc& e)
+    {
+        std::cerr << e.what() << std::endl;
+        delete this;
+        return tmp;
+    }
+    
+    return *this;
 }
 
 template <class T>
@@ -262,13 +284,14 @@ template <class T>
 const void Queue<T>::popFront()
 {
     if(!(this->m_front)){
-        return;
+        throw Queue::EmptyQueue();
+
     }
     
     Node<T>* tmp = this->m_front;
     this->m_front = this->m_front->getNext();
     delete tmp;
-    this->m_size--;
+    this->m_size -= 1;
 }
 
 template <class T>
