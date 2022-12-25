@@ -1,6 +1,6 @@
 #ifndef __NODE_H__
 #define __NODE_H__
-#include "Queuenew.h"
+#include "Queue.h"
 
 /**
  * in this file we impliment the Node class which is used in the Queue class
@@ -19,16 +19,20 @@ typedef int T;
 
 template <class T>
 class Node
-{
-private:
-    Node* m_next;
-    T m_item;     
+{     
 public:
     Node(const T& item);
+    Node(const Node<T>&) = default;
     ~Node() = default;
+    Node<T>& operator=(const Node<T>&) = default;
+    
     void setNext(Node* next);   //changes the m_next pointer to the next node  
-    Node* getNext() const;            //returns the m_next pointer
-    T& getRefItem();         //returns a reference to m_item
+    Node* getNext() const;   //returns the m_next pointer
+    T& getRefItem();    //returns a reference to m_item
+
+private:
+    Node* m_next;
+    T m_item;
 };
 
 template <class T>
@@ -40,7 +44,8 @@ Node<T>::Node(const T& item):
 template <class T>
 void Node<T>::setNext(Node<T>* next)
 {
-    if(next == nullptr || this == nullptr)
+    //sometimes this method called when there isn't a Node created (using a pointer)
+    if(next == nullptr || this == nullptr)  
     {
         return;
     }
