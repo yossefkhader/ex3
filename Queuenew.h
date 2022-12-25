@@ -151,17 +151,9 @@ Queue<T>::Queue(const Queue& q):
     {
         throw Queue::EmptyQueue();
     }
-    try{
-        m_front = new Node<T>(q.front());
-    }
-    catch(std::bad_alloc& e)
-    {
-        std::cerr << e.what() << std::endl;
-        throw;
-    }
     for(Queue::ConstIterator it = q.begin(); it != q.end(); ++it)
     {
-        pushBack(it.m_node->getRefItem());
+        this->pushBack(it.m_node->getRefItem());
     }
 }
 
@@ -192,18 +184,28 @@ Queue<T>& Queue<T>::operator=(const Queue& q)
 template <class T>
 const void Queue<T>::pushBack(T item)
 {
+    Node<T>* new_node = nullptr;
+    this->m_backCopy = item;
     try{
-        this->m_backCopy = item;
-        Node<T>* tmp = new Node<T>(item);
-        this->m_back->setNext(tmp);
-        this->m_size++;
+        new_node = new Node<T>(item);
     }
     catch(std::bad_alloc& e)
     {
         std::cerr << e.what() << std::endl;
-        this->~Queue();
         throw;
+    }
+
+    if(this->m_front == nullptr)
+    {
+        this->m_front = new_node;
     } 
+    else
+    {
+        this->m_back->setNext(new_node);
+    }
+
+    this->m_back = new_node;
+    this->m_size++;
 }
 
 template <class T>

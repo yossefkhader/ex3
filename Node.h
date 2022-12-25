@@ -17,31 +17,34 @@ typedef int T;
     [x] change it into template
 */
 
-template <typename T>
+template <class T>
 class Node
 {
 private:
     Node* m_next;
-    T m_item;      
+    T m_item;     
 public:
-    Node(const T& m_item);
+    Node(const T& item);
     ~Node() = default;
-    const void setNext(Node* item);   //changes the m_next pointer to the next node  
-Node* getNext() const;            //returns the m_next pointer
+    void setNext(Node* next);   //changes the m_next pointer to the next node  
+    Node* getNext() const;            //returns the m_next pointer
     T& getRefItem();         //returns a reference to m_item
 };
 
 template <class T>
-Node<T>::Node(const T& m_item)
-{
-    this->m_next = nullptr;
-    this->m_item = m_item;
-}
+Node<T>::Node(const T& item):
+    m_next(nullptr),
+    m_item(item)
+{}
 
 template <class T>
-const void Node<T>::setNext(Node<T>* item)
+void Node<T>::setNext(Node<T>* next)
 {
-    this->m_next = item;
+    if(next == nullptr || this == nullptr)
+    {
+        return;
+    }
+    this->m_next = next;
 }
 
 template <class T>
