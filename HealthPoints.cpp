@@ -1,62 +1,98 @@
 #include "HealthPoints.h"
 
-HealthPoints::HealthPoints(int healthPoints) : m_MAXHP(healthPoints)
+HealthPoints::HealthPoints(int healthPoints) : 
+   m_MAXHP(healthPoints)
 {
-   if (m_MAXHP <= 0)
+   if (healthPoints <= 0)
    {
-      throw InvalidArgument{};
+      throw InvalidArgument();
    }
+
    this->m_healthPoints = healthPoints;
 }
 
-HealthPoints& HealthPoints::operator+(const int num)
+HealthPoints& HealthPoints::operator=(const HealthPoints& hp)
 {
-   this->m_healthPoints += num;
-
-   if(this->m_healthPoints > this->m_MAXHP)
-   {
-      this->m_healthPoints = this->m_MAXHP;
-   }
+   this->m_healthPoints = hp.m_healthPoints;
+   this->m_MAXHP = hp.m_MAXHP;
 
    return *this;
 }
 
-HealthPoints& HealthPoints::operator-(const HealthPoints& hp)
+HealthPoints& HealthPoints::operator+(const int num)
 {
-   HealthPoints *temp;
+   
+   HealthPoints *tmp = nullptr;
+
    try
    {
-      temp = new HealthPoints(hp.m_healthPoints - this->m_healthPoints);
+      tmp = new HealthPoints(*this);
    }
-   catch (const std::bad_alloc& e)
+   catch (std::bad_alloc &e) 
    {
       std::cerr << e.what() << std::endl;
-      throw std::exception();
+      throw;
    }
-   return *temp;
+   
+   tmp->m_healthPoints += num;
+
+   if(tmp->m_healthPoints > tmp->m_MAXHP)
+   {
+      tmp->m_healthPoints = tmp->m_MAXHP;
+   }
+   
+   if(tmp->m_healthPoints < 0)
+   {
+      tmp->m_healthPoints = 0;
+   }
+
+   return *tmp;
+}
+
+HealthPoints& HealthPoints::operator-(const int num)
+{
+   return *this + (-1*num);
 }
 
 HealthPoints& HealthPoints::operator+=(const HealthPoints& hp)
 {
+   return *this += hp.m_healthPoints;
+}
 
-   if (this->m_healthPoints + hp.m_healthPoints >= this->m_MAXHP)
+HealthPoints& HealthPoints::operator+=(const int num)
+{
+   this->m_healthPoints += num;
+   
+   if(this->m_healthPoints < 0)
+   {
+      this->m_healthPoints = 0;
+   }
+   else if(this->m_healthPoints > this->m_MAXHP)
    {
       this->m_healthPoints = this->m_MAXHP;
    }
-   else
-      this->m_healthPoints += hp.m_healthPoints;
+   
    return *this;
 }
 
 HealthPoints& HealthPoints::operator-=(const HealthPoints& hp)
 {
+   return *this -= hp.m_healthPoints;
+}
 
-   if (this->m_healthPoints - hp.m_healthPoints <= 0)
+HealthPoints& HealthPoints::operator-=(const int num)
+{
+   this->m_healthPoints -= num;
+   
+   if(this->m_healthPoints < 0)
    {
       this->m_healthPoints = 0;
    }
-   else
-      this->m_healthPoints -= hp.m_healthPoints;
+   if(this->m_healthPoints > this->m_MAXHP)
+   {
+      this->m_healthPoints = this->m_MAXHP;
+   }
+   
    return *this;
 }
 

@@ -6,24 +6,6 @@
 #include <iostream>
 #include "Node.h"
 
-
-
-
-/*
- TODO:
-    [x] make an iterator class 
-    [x] CHECK WTF I'VE DID WITH THE ITERATOR CLASS
-    [x] check which of the functions has to be const
-    [x] check also if there is enough function in the class to be const
-    [x] create custom exception classes 
-    [x] add the error indicators (try, catch, throw) in the needed places
-    [ ] add the Iterator exceptions
-    [x] complete the remaining functions(filter and transform)
-    [x] make an another copy for filter and transform that has function object in the argument
-    FIXME: change it into template
-    [x] write notes here and there
-*/
-
 template <class T>
 class Queue
 {
@@ -186,13 +168,19 @@ Queue<T>::Queue(const Queue& q)
         throw Queue::EmptyQueue();
     }
     this->m_size = 0;
-    for(Queue::ConstIterator it = q.begin(); it != q.end(); ++it)
+    try
     {
-        this->pushBack(it.m_node->getRefItem());
+        for(Queue::ConstIterator it = q.begin(); it != q.end(); ++it)
+        {
+            this->pushBack(it.m_node->getRefItem());
+        }
+    }
+    catch (std::bad_alloc& e) 
+    {
+        throw;
     }
 }
 
-//Todo: check this shit
 template <class T>
 Queue<T>& Queue<T>::operator=(const Queue& q)
 {
@@ -203,11 +191,11 @@ Queue<T>& Queue<T>::operator=(const Queue& q)
 
     try
     {
-        tmp = new Queue<T>(*this);
+        tmp = new Queue<T>(q);
     }
-    catch (std::bad_alloc& e)
+    catch (std::bad_alloc& e) 
     {
-        std::cerr << e.what() << std::endl;
+        throw;
     }
 
     int qSize = this->size();
@@ -223,13 +211,11 @@ Queue<T>& Queue<T>::operator=(const Queue& q)
             this->pushBack(it.m_node->getRefItem());
         }
     }
-    catch (std::bad_alloc& e)
+    catch (std::bad_alloc& e) 
     {
-        std::cerr << e.what() << std::endl;
-        delete this;
-        return tmp;
+        throw;
     }
-    
+    delete tmp;
     return *this;
 }
 
@@ -241,9 +227,8 @@ const void Queue<T>::pushBack(T item)
     {
         new_node = new Node<T>(item);
     } 
-    catch (std::bad_alloc &e) 
+    catch (std::bad_alloc& e) 
     {
-        std::cerr << e.what() << std::endl;
         throw;
     }
 
@@ -275,7 +260,7 @@ const T& Queue<T>::front() const
 {
     if(!(this->m_front))
     {
-        throw Queue::EmptyQueue();
+        throw Queue<T>::EmptyQueue();
     }
     return this->m_front->getRefItem();
 }
@@ -284,8 +269,7 @@ template <class T>
 const void Queue<T>::popFront()
 {
     if(!(this->m_front)){
-        throw Queue::EmptyQueue();
-
+        throw Queue<T>::EmptyQueue();
     }
     
     Node<T>* tmp = this->m_front;

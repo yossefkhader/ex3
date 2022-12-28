@@ -12,11 +12,13 @@ public:
   HealthPoints(const HealthPoints&) = default;
   HealthPoints(int healthPoints = START_HP);
 
-  HealthPoints& operator=(const HealthPoints&) = default;
+  HealthPoints& operator=(const HealthPoints&);
   HealthPoints& operator+(const int num);
-  HealthPoints& operator-(const HealthPoints& hp);
+  HealthPoints& operator-(const int num);
   HealthPoints& operator+=(const HealthPoints& hp);
+  HealthPoints& operator+=(const int num);
   HealthPoints& operator-=(const HealthPoints& hp);
+  HealthPoints& operator-=(const int num);
   friend HealthPoints& operator+(const int num, HealthPoints& hp);
 
   //boolean operators
