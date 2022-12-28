@@ -86,9 +86,9 @@ public:
      * and 'typename' F for the function object
     */
     template <typename E>
-    friend Queue<E>& filter(const Queue<E>& q, bool (*FilterType)(E)); //takes function ptr in the argumnt
+    friend Queue<E> filter(const Queue<E>& q, bool (*FilterType)(E)); //takes function ptr in the argumnt
     template <typename E, typename F>
-    friend Queue<E>& filter(const Queue<E>& q, F function); //takes a function object in the argument
+    friend Queue<E> filter(const Queue<E>& q, F function); //takes a function object in the argument
 
 private:
     Node<T>* m_node;
@@ -153,11 +153,13 @@ public:
 template <class T>
 Queue<T>::~Queue()
 {
-    for(int i=0; i<this->size(); ++i)
+    Node<T>* current = m_front;
+    while (current != nullptr)
     {
-        this->popFront();
+        Node<T>* next = current->getNext();
+        delete current;
+        current = next;
     }
-
 }
 
 template <class T>
@@ -395,45 +397,32 @@ typename Queue<T>::ConstIterator& Queue<T>::ConstIterator::operator++()
 */
 
 template <class T>
-Queue<T>& filter(const Queue<T>& q, bool (*FilterType)(T))
+Queue<T> filter(const Queue<T>& q, bool (*FilterType)(T))
 {
-    Queue<T>* result;
-    try{
-        result = new Queue<T>();
-    }
-    catch(std::bad_alloc& e) {
-        std::cerr << e.what() << std::endl;
-        throw;
-    }
+    Queue<T> result;
     for(typename Queue<T>::ConstIterator it = q.begin(); it != q.end(); ++it)
     {
         if(FilterType(it.m_node->getRefItem()))
         {
-            result->pushBack(it.m_node->getRefItem());
+            result.pushBack(it.m_node->getRefItem());
         }
     }
-    return *result;
+    return result;
 }
 
 template <class T, typename F>
-Queue<T>& filter(const Queue<T>& q, F function)
+Queue<T> filter(const Queue<T>& q, F function)
 {
-    Queue<T>* result;
-    try{
-        result = new Queue<T>();
-    }
-    catch(std::bad_alloc& e) {
-        std::cerr << e.what() << std::endl;
-        throw;
-    }
+    Queue<T> result;
+    
     for(typename Queue<T>::ConstIterator it = q.begin(); it != q.end(); ++it)
     {
         if(function(it.m_node->getRefItem()))
         {
-            result->pushBack(it.m_node->getRefItem());
+            result.pushBack(it.m_node->getRefItem());
         }
     }
-    return *result;
+    return result;
 }
 
 template <class T>

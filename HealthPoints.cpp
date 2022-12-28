@@ -11,45 +11,26 @@ HealthPoints::HealthPoints(int healthPoints) :
    this->m_healthPoints = healthPoints;
 }
 
-HealthPoints& HealthPoints::operator=(const HealthPoints& hp)
+HealthPoints HealthPoints::operator+(const int num)
 {
-   this->m_healthPoints = hp.m_healthPoints;
-   this->m_MAXHP = hp.m_MAXHP;
+   HealthPoints tmp(*this);
 
-   return *this;
+   tmp.m_healthPoints += num;
+
+   if(tmp.m_healthPoints > tmp.m_MAXHP)
+   {
+      tmp.m_healthPoints = tmp.m_MAXHP;
+   }
+   
+   if(tmp.m_healthPoints < 0)
+   {
+      tmp.m_healthPoints = 0;
+   }
+
+   return tmp;
 }
 
-HealthPoints& HealthPoints::operator+(const int num)
-{
-   
-   HealthPoints *tmp = nullptr;
-
-   try
-   {
-      tmp = new HealthPoints(*this);
-   }
-   catch (std::bad_alloc &e) 
-   {
-      std::cerr << e.what() << std::endl;
-      throw;
-   }
-   
-   tmp->m_healthPoints += num;
-
-   if(tmp->m_healthPoints > tmp->m_MAXHP)
-   {
-      tmp->m_healthPoints = tmp->m_MAXHP;
-   }
-   
-   if(tmp->m_healthPoints < 0)
-   {
-      tmp->m_healthPoints = 0;
-   }
-
-   return *tmp;
-}
-
-HealthPoints& HealthPoints::operator-(const int num)
+HealthPoints HealthPoints::operator-(const int num)
 {
    return *this + (-1*num);
 }
@@ -96,7 +77,7 @@ HealthPoints& HealthPoints::operator-=(const int num)
    return *this;
 }
 
-HealthPoints& operator+(const int num, HealthPoints& hp)
+HealthPoints operator+(const int num, HealthPoints& hp)
 {
    return hp + num;
 }
